@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.vaadin.componentfactory</groupId>
-    <artifactId>multiselect-combobox-flow</artifactId>
+    <artifactId>multiselect-combo-box-flow</artifactId>
     <version>0.0.2</version>
     <packaging>jar</packaging>
 
