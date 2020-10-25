@@ -13,7 +13,7 @@ import { ComboBoxElement } from '@vaadin/vaadin-combo-box';
 import '@vaadin/vaadin-license-checker/vaadin-license-checker';
 import '@vaadin/vaadin-checkbox/vaadin-checkbox';
 
-import { commitValue, overlaySelectedItemChanged, renderer, onEnter } from './helpers';
+import { commitValue, overlaySelectedItemChanged, renderer, onEnter, _filteredItemsChanged, filterChanged, renderLabel } from './helpers.js';
 
 /**
  * `<vcf-multiselect-combo-box>` A multiselect combobox
@@ -53,26 +53,17 @@ class VcfMultiselectComboBox extends ElementMixin(ThemableMixin(ComboBoxElement)
     super();
 
     this._boundOverriddenCommitValue = commitValue.bind(this);
+    this.renderLabel = renderLabel.bind(this);
     this._boundOverriddenOverlaySelectedItemChanged = overlaySelectedItemChanged.bind(this);
     this._boundRenderer = renderer.bind(this);
     this._boundOnEnter = onEnter.bind(this);
-  }
+    this._filteredItemsChanged = _filteredItemsChanged.bind(this);
 
-  ready() {
-    super.ready();
-
-    this._commitValue = this._boundOverriddenCommitValue;
-    this.renderer = this._boundRenderer;
-    this._onEnter = this._boundOnEnter;
-
-    const boundOldOpenedChanged = this._openedChanged.bind(this);
-    this._openedChanged = (value, old) => {
-      boundOldOpenedChanged(value, old);
-
-      if (value) {
-        this._addTopButtons();
-      }
-    }
+    // This will prevent the component from setting the
+    // `value` property and showing the blue tick beside
+    // the selected item.
+    this._selectedItemChanged = () => {};
+    this._prefillFocusedItemLabel = () => {};
   }
 
   static get properties() {
@@ -85,37 +76,44 @@ class VcfMultiselectComboBox extends ElementMixin(ThemableMixin(ComboBoxElement)
     };
   }
 
-  static get is() {
-    return 'vcf-multiselect-combo-box';
-  }
+  ready() {
+    super.ready();
 
-  static get version() {
-    return '0.1.0';
+    this._commitValue = this._boundOverriddenCommitValue;
+    this.renderer = this._boundRenderer;
+    this._onEnter = this._boundOnEnter;
+    this._filterChanged = filterChanged.bind(this);
+
+    const boundOldOpenedChanged = this._openedChanged.bind(this);
+    this._openedChanged = (value, old) => {
+      boundOldOpenedChanged(value, old);
+
+      if (value) {
+        this._addTopButtons();
+
+        this._inputElementValue = '';
+      }
+    }
   }
 
   connectedCallback() {
     super.connectedCallback();
 
-    // This will prevent the component from setting the
-    // `value` property and showing the blue tick beside
-    // the selected item.
-    this._selectedItemChanged = () => {};
-
     this.$.overlay.removeEventListener('selection-changed', this._boundOverlaySelectedItemChanged);
     this.$.overlay.addEventListener('selection-changed', this._boundOverriddenOverlaySelectedItemChanged);
+    /* item selection instead of checkbox
+    var that = this;
+    this._oldisItemSelected  = this.$.overlay._isItemSelected;
+    this.$.overlay._isItemSelected = function(item, selectedItem, itemIdPath) {
+      if (item !== undefined) {
+        // find first item in selected item
+        return that.selectedItems.some(value => this.get(itemIdPath, item) === this.get(itemIdPath, value));
+      }
+      return false;
+    }*/
   }
 
   _selectedItemsChanged(value, oldValue) {
-    this._inputElementValue = value.reduce((prev, current) => {
-      let val = '';
-      if ((typeof current === 'string')) {
-        val = current;
-      } else {
-        val = current[this.itemLabelPath];
-      }
-      return `${val}${prev === '' ? '' : `, ${prev}`}`;
-    }, '');
-
     if (this.items) {
       this.items = this.items
           .sort((a, b) => {
@@ -141,6 +139,7 @@ class VcfMultiselectComboBox extends ElementMixin(ThemableMixin(ComboBoxElement)
     }
 
     this.render();
+    /*this._inputElementValue = '';*/
 
     const e = new CustomEvent('selected-items-changed', {
       detail: value,
@@ -187,12 +186,20 @@ class VcfMultiselectComboBox extends ElementMixin(ThemableMixin(ComboBoxElement)
       const topButtonsContainer = document.createElement('div');
       topButtonsContainer.id = 'top-buttons-container';
       topButtonsContainer.style.display = 'flex';
-      topButtonsContainer.style.flexDirection = 'column';
-      topButtonsContainer.style.padding = '0 .5em 0';
+      topButtonsContainer.style.flexDirection = 'row';
+      /*topButtonsContainer.style.padding = '0 .5em 0';*/
       const selectAllButton = document.createElement('vaadin-button');
       selectAllButton.innerText = "Select All";
+      selectAllButton.setAttribute("theme", "small");
+      selectAllButton.style.flexGrow = 1;
       const clearButton = document.createElement('vaadin-button');
+      clearButton.setAttribute("theme", "small");
       clearButton.innerText = "Clear";
+
+      const cancelButton = document.createElement('vaadin-button');
+      cancelButton.innerText = "Cancel";
+      cancelButton.setAttribute("theme", "small");
+      cancelButton.style.flexGrow = 1;
 
 
       selectAllButton.addEventListener('click', () => {
@@ -207,9 +214,18 @@ class VcfMultiselectComboBox extends ElementMixin(ThemableMixin(ComboBoxElement)
         this.selectedItems = [];
       });
 
-      topButtonsContainer.appendChild(selectAllButton);
-      topButtonsContainer.appendChild(clearButton);
+      cancelButton.addEventListener('click', () => {
+        if (this.$server) {
+          this.$server.cancelChanges();
+        }
+      });
 
+      topButtonsContainer.appendChild(selectAllButton);
+      if (this.$server) {
+        topButtonsContainer.appendChild(cancelButton);
+      } else {
+        topButtonsContainer.appendChild(clearButton);
+      }
       const targetNode = this.$.overlay.$.dropdown.$.overlay.$.content.shadowRoot;
       if (!targetNode.querySelector('#top-buttons-container')) {
         this.$.overlay.$.dropdown.$.overlay.$.content.shadowRoot.prepend(topButtonsContainer);
@@ -228,6 +244,14 @@ class VcfMultiselectComboBox extends ElementMixin(ThemableMixin(ComboBoxElement)
     if (typeof licenseChecker === 'function') {
       licenseChecker(VcfMultiselectComboBox);
     }
+  }
+
+  static get is() {
+    return 'vcf-multiselect-combo-box';
+  }
+
+  static get version() {
+    return '0.1.3';
   }
 }
 

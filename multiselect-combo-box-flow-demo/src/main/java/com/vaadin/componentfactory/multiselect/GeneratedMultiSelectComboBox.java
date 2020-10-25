@@ -24,7 +24,7 @@ import java.util.Set;
 
 
 @Tag("vcf-multiselect-combo-box")
-@JsModule("@vaadin-component-factory/vcf-multiselect-combo-box/src/vcf-multiselect-combo-box.js")
+@JsModule("./src/vcf-multiselect-combo-box.js")
 @NpmPackage(value = "@vaadin-component-factory/vcf-multiselect-combo-box", version = "0.1.3")
 public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelectComboBox<R, T>, T>
         extends AbstractSinglePropertyField<R, Set<T>>
@@ -1217,69 +1217,5 @@ public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelec
         this(null, null, null, (SerializableFunction) null,
                 (SerializableFunction) null);
     }
-
-/*
-    public static class SelectedItemsChangeEvent<R extends GeneratedMultiSelectComboBox<R, ?>>
-        extends ComponentEvent<R> {
-        private final JsonArray selectedItems;
-
-        public SelectedItemsChangeEvent(R source, boolean fromClient) {
-            super(source, fromClient);
-            this.selectedItems = source.getSelectedItemsJsonObject();
-        }
-
-        public JsonArray getSelectedItems() {
-            return selectedItems;
-        }
-    }
-*/
-    /**
-     * Adds a listener for {@code selected-item-changed} events fired by the
-     * webcomponent.
-     *
-     * @param listener
-     *            the listener
-     * @return a {@link Registration} for removing the event listener
-     */
-  /*  protected Registration addSelectedItemsChangeListener(
-        ComponentEventListener<SelectedItemsChangeEvent<R>> listener) {
-        return getElement().addPropertyChangeListener("selectedItems",
-            event -> listener.onComponentEvent(
-                new SelectedItemsChangeEvent<R>((R) this,
-                    event.isUserOriginated())));
-    }*/
-
-    /**
-     * <p>
-     * Description copied from corresponding location in WebComponent:
-     * </p>
-     * <p>
-     * The selected item from the {@code items} array.
-     * <p>
-     * This property is synchronized automatically from client side when a
-     * 'selected-item-changed' event happens.
-     * </p>
-     *
-     * @return the {@code selectedItem} property from the webcomponent
-     */
-   /* @Synchronize(property = "selectedItems", value = "selected-items-changed")
-    protected JsonArray getSelectedItemsJsonObject() {
-        return (JsonArray) getElement().getPropertyRaw("selectedItems");
-    }*/
-
-    /**
-     * <p>
-     * Description copied from corresponding location in WebComponent:
-     * </p>
-     * <p>
-     * The selected item from the {@code items} array.
-     * </p>
-     *
-     * @param selectedItem
-     *            the JsonObject value to set
-     */
-   /* protected void setSelectedItems(JsonArray selectedItem) {
-        getElement().setPropertyJson("selectedItems", selectedItem);
-    }*/
 
 }

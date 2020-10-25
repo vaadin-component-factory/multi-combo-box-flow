@@ -1,0 +1,7 @@
+:host([theme~="vcf-multiselect-combo-box"]) {
+    padding: 0px;
+}
+
+:host([theme~="vcf-multiselect-combo-box"][tabindex])::before {
+    display: none;
+}

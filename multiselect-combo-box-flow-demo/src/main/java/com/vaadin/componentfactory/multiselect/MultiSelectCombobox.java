@@ -12,6 +12,7 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.JsonSerializable;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.data.binder.HasFilterableDataProvider;
@@ -53,6 +54,7 @@ import java.util.stream.Stream;
 /**
  * @author jcgueriaud
  */
+@CssImport(value = "./src/vcf-vaadin-combo-box-item.css", themeFor = "vaadin-combo-box-item")
 @JsModule.Container({@JsModule("./flow-component-renderer.js"), @JsModule("./comboBoxConnector-es6.js")})
 @JavaScript("frontend://comboBoxConnector.js")
 public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSelectCombobox<T>, T>
@@ -65,6 +67,8 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
     private static final String PROP_AUTO_OPEN_DISABLED = "autoOpenDisabled";
     private Registration dataProviderListener = null;
     private boolean shouldForceServerSideFiltering = false;
+
+    private Set<T> previousSelectedItems = new HashSet<>();
 
     /**
      * A callback method for fetching items. The callback is provided with a
@@ -229,10 +233,17 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
         });
         // sort on close
         addOpenedChangeListener(event -> {
-            if (!event.isOpened()) {
+            if (event.isOpened()) {
+                // clone the previous selectedItems on open
+                previousSelectedItems = new HashSet<>(getValue());
+            } else {
+                // clear the previous selectedItems on close
+                previousSelectedItems = new HashSet<>();
                 getDataProvider().refreshAll();
             }
         });
+        getElement().setAttribute("theme", "vcf-multiselect-combo-box");
+
     }
 
     /**
@@ -295,7 +306,22 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
         Set<T> result = new HashSet<>();
         for (int i = 0; i < presentationArray.length(); i++) {
             JsonObject object = presentationArray.getObject(i);
-            result.add(comboBox.getKeyMapper().get(object.getString("key")));
+
+            T data = comboBox.getKeyMapper().get(object.getString("key"));
+            if (data != null) {
+                result.add(data);
+            }
+        }
+        // all the filtered items are removed from the key mapper
+        // but should be still in the selectedItems
+        // add all old values that are not in the key mapper (filtered items)
+        // if the UI is removing a item, it should be in the keymapper
+        if (comboBox.getValue() != null) {
+            for (T item : comboBox.getValue()) {
+                if (!comboBox.getKeyMapper().has(item)) {
+                    result.add(item);
+                }
+            }
         }
         return result;
     }
@@ -335,12 +361,12 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
                         + "items into the ComboBox before setting a value.");
             }
         }
-        //super.setValue(value);
-        refreshValue(value);
+        super.setValue(value);
+        refreshValue();
     }
 
-    private void refreshValue(Set<T> values) {
-        //Set<T> values = getValue();
+    private void refreshValue() {
+        Set<T> values = getValue();
         if (values != null) {
             DataKeyMapper<T> keyMapper = getKeyMapper();
             for (T value : values) {
@@ -367,25 +393,11 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
         }
         //setSelectedItems(modelToPresentation(this, values, this::generateLabel));
         getElement().setPropertyJson(PROP_VALUE, modelToPresentation(this, values, this::generateLabel));
-
-       /* TODO JCG if (value != null && keyMapper.has(value)) {
-            value = keyMapper.get(keyMapper.key(value));
+        // refresh the label if closed
+        if (!isOpened()) {
+            getElement().executeJs("$0.renderLabel()",this);
         }
 
-        if (value == null) {
-            getElement().setProperty(PROP_SELECTED_ITEM, null);
-            getElement().setProperty(PROP_VALUE, "");
-            getElement().setProperty(PROP_INPUT_ELEMENT_VALUE, "");
-            return;
-        }
-
-        // This ensures that the selection works even with lazy loading when the
-        // item is not yet loaded
-        JsonObject json = Json.createObject();
-        json.put("key", keyMapper.key(value));
-        dataGenerator.generateData(value, json);
-        setSelectedItem(json);
-        getElement().setProperty(PROP_VALUE, keyMapper.key(value));*/
     }
 
     /**
@@ -696,7 +708,7 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
                                 ListDataProvider<T> listDataProvider) {
         Objects.requireNonNull(listDataProvider,
             "List data provider cannot be null");
-        // add a sort comparator ? todo jcg
+
         SerializableComparator<T> tSerializableComparator = (t1, t2) -> {
             if (getValue() == null) {
                 return 0;
@@ -747,7 +759,7 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
         this.itemLabelGenerator = itemLabelGenerator;
         reset();
         if (getValue() != null) {
-            refreshValue(getValue());
+            refreshValue();
         }
     }
 
@@ -1107,9 +1119,8 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
     private void setRequestedRange(int start, int length, String filter) {
         dataCommunicator.setRequestedRange(start, length);
         filterSlot.accept(filter);
-        // Send (possibly updated) key for the selected value
-        /* TODO JCG getElement().executeJs("this._selectedKey=$0",
-            getValue() != null ? getKeyMapper().key(getValue()) : "");*/
+        // Send (possibly updated) key for the selected values
+        getElement().setPropertyJson(PROP_VALUE, modelToPresentation(this, getValue(), this::generateLabel));
     }
 
     @ClientCallable
@@ -1152,4 +1163,9 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
         setValue(getDataProvider().fetch(new Query<>()).collect(Collectors.toSet()));
     }
 
+    @ClientCallable
+    private void cancelChanges() {
+        setValue(previousSelectedItems);
+        close();
+    }
 }

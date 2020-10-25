@@ -70,18 +70,39 @@ export function commitValue() {
   if (!this.dataProvider) {
     this.filter = '';
   }
+
+  this.renderLabel();
+}
+
+export function renderLabel() {
+
+  this._inputElementValue = this.selectedItems.reduce((prev, current) => {
+    let val = '';
+    if ((typeof current === 'string')) {
+      val = current;
+    } else {
+      val = current[this.itemLabelPath];
+    }
+    return `${val}${prev === '' ? '' : `, ${prev}`}`;
+  }, '');
 }
 
 export function overlaySelectedItemChanged(e) {
   // stop this private event from leaking outside.
   e.stopPropagation();
-
+/*
+  if (!this._isItemChecked(e.detail.item)) {
+    this._selectItem(e.detail.item);
+  } else {
+    this._deselectItem(e.detail.item);
+  }*/
   if (this.opened) {
     this._focusedIndex = this.filteredItems.indexOf(e.detail.item);
   } else if (this.selectedItem !== e.detail.item) {
     this.selectedItem = e.detail.item;
     this._detectAndDispatchChange();
   }
+  this.dispatchEvent(new CustomEvent('change', {bubbles: true}));
 }
 
 export function onEnter(e) {
@@ -91,11 +112,14 @@ export function onEnter(e) {
       (this.opened || this.autoOpenDisabled) &&
       (this.allowCustomValue || this._inputElementValue === '' || this._focusedIndex > -1)
   ) {
-    const targetItem = this.items[this._focusedIndex];
-    if (!this._isItemChecked(targetItem)) {
-      this._selectItem(targetItem);
-    } else {
-      this._deselectItem(targetItem);
+    const targetItem = this.filteredItems[this._focusedIndex];
+
+    if (!(typeof targetItem === 'undefined')) {
+      if (!this._isItemChecked(targetItem)) {
+        this._selectItem(targetItem);
+      } else {
+        this._deselectItem(targetItem);
+      }
     }
 
     // Do not submit the surrounding form.
@@ -105,3 +129,56 @@ export function onEnter(e) {
     e.stopPropagation();
   }
 }
+
+export function filterChanged(filter, itemValuePath, itemLabelPath) {
+  if (filter === undefined) {
+    return;
+  }
+  console.log("filterChanged");
+
+  // Notify the dropdown about filter changing, so to let it skip the
+  // scrolling restore
+  this.$.overlay.filterChanged = true;
+
+  if (this.items) {
+    if (filter) {
+      this.filteredItems = [...this.selectedItems, ...this._filterItems(this.items, filter)];
+    } else {
+      this.filteredItems = this._filterItems(this.items, filter);
+    }
+  } else {
+    // With certain use cases (e. g., external filtering), `items` are
+    // undefined. Filtering is unnecessary per se, but the filteredItems
+    // observer should still be invoked to update focused item.
+    this._filteredItemsChanged({path: 'filteredItems', value: this.filteredItems}, itemValuePath, itemLabelPath);
+  }
+}
+
+
+
+/**
+ * Change the default to focus on the first items not selected after filtering
+ * @param e
+ * @param itemValuePath
+ * @param itemLabelPath
+ * @private
+ */
+export function _filteredItemsChanged(e, itemValuePath, itemLabelPath) {
+  if (e.value === undefined) {
+    return;
+  }
+  if (e.path === 'filteredItems' || e.path === 'filteredItems.splices') {
+    this._setOverlayItems(this.filteredItems);
+
+    if (this.opened || this.autoOpenDisabled) {
+      this._focusedIndex = this.filteredItems.findIndex(item => !this._isItemChecked(item));
+    } else {
+      this._focusedIndex = -1;
+    }
+
+    if (this.opened) {
+      this._repositionOverlay();
+    }
+  }
+}
+
