@@ -10,8 +10,8 @@ public class MainLayout extends AppLayout {
     public MainLayout() {
         final DrawerToggle drawerToggle = new DrawerToggle();
         final RouterLink simple = new RouterLink("Simple view", SimpleView.class);
-        final RouterLink renderer = new RouterLink("Renderer view", RendererView.class);
-        final VerticalLayout menuLayout = new VerticalLayout(simple,renderer);
+        final RouterLink inMemoryView = new RouterLink("InMemory view", InMemoryView.class);
+        final VerticalLayout menuLayout = new VerticalLayout(simple,inMemoryView);
         addToDrawer(menuLayout);
         addToNavbar(drawerToggle);
     }

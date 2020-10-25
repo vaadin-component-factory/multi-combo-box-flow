@@ -1,5 +1,22 @@
 package com.vaadin.componentfactory.multiselect;
 
+/*
+ * #%L
+ * Multiselect combobox Component
+ * %%
+ * Copyright (C) 2020 Vaadin Ltd
+ * %%
+ * This program is available under Commercial Vaadin Add-On License 3.0
+ * (CVALv3).
+ * 
+ * See the file license.html distributed with this software for more
+ * information about licensing.
+ * 
+ * You should have received a copy of the CVALv3 along with this program.
+ * If not, see <http://vaadin.com/license/cval-3>.
+ * #L%
+ */
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -211,7 +228,6 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
      *
      * @param pageSize
      *            the amount of items to request at a time for lazy loading
-     * @see {@link #setPageSize(int)}
      */
     public MultiSelectCombobox(int pageSize) {
         super(null, null, JsonValue.class, MultiSelectCombobox::presentationToModel,
@@ -332,7 +348,7 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
     }
 
     private static <T> JsonArray modelToPresentation(MultiSelectCombobox<T> comboBox,
-                                                  Set<T> models, ItemLabelGenerator<T> generateLabel) {
+                                                  Collection<T> models, ItemLabelGenerator<T> generateLabel) {
         if (models == null) {
             return Json.createArray();
         }
@@ -342,7 +358,7 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
             JsonObject json = Json.createObject();
             String key = comboBox.getKeyMapper().key(model);
             json.put("key", key);
-            json.put("label", generateLabel.apply(model)); // TODO JCG
+            json.put("label", generateLabel.apply(model));
             array.set(i, json);
             i++;
         }
@@ -812,7 +828,6 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
      * The default page size is 50.
      *
      * @return the maximum number of items sent per request
-     * @see {@link #setPageSize(int)}
      */
     public int getPageSize() {
         return getElement().getProperty("pageSize", 50);
@@ -865,52 +880,6 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
     }
 
     /**
-     * Enables or disables the component firing events for custom string input.
-     * <p>
-     * When enabled, a {@link CustomValueSetEvent} will be fired when the user
-     * inputs a string value that does not match any existing items and commits
-     * it eg. by blurring or pressing the enter-key.
-     * <p>
-     * Note that ComboBox doesn't do anything with the custom value string
-     * automatically. Use the
-     * {@link #addCustomValueSetListener(ComponentEventListener)} method to
-     * determine how the custom value should be handled. For example, when the
-     * ComboBox has {@code String} as the value type, you can add a listener
-     * which sets the custom string as the value of the ComboBox with
-     * {@link #setValue(Object)}.
-     * <p>
-     * Setting to {@code true} also allows an unfocused ComboBox to display a
-     * string that doesn't match any of its items nor its current value, unless
-     * this is explicitly handled with
-     * {@link #addCustomValueSetListener(ComponentEventListener)}. When set to
-     * {@code false}, an unfocused ComboBox will always display the label of the
-     * currently selected item.
-     *
-     * @param allowCustomValue
-     *            {@code true} to enable custom value set events, {@code false}
-     *            to disable them
-     * @see #addCustomValueSetListener(ComponentEventListener)
-     */
-   /* @Override
-    public void setAllowCustomValue(boolean allowCustomValue) {
-        super.setAllowCustomValue(allowCustomValue);
-    }*/
-
-    /**
-     * If {@code true}, the user can input string values that do not match to
-     * any existing item labels, which will fire a {@link CustomValueSetEvent}.
-     *
-     * @return {@code true} if the component fires custom value set events,
-     *         {@code false} otherwise
-     *
-     * @see #setAllowCustomValue(boolean)
-     * @see #addCustomValueSetListener(ComponentEventListener)
-     */
-   /* public boolean isAllowCustomValue() {
-        return isAllowCustomValueBoolean();
-    }*/
-
-    /**
      * Enables or disables the dropdown opening automatically. If {@code false}
      * the dropdown is only opened when clicking the toggle button or pressing
      * Up or Down arrow keys.
@@ -926,7 +895,7 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
     /**
      * Gets whether dropdown will open automatically or not.
      *
-     * @return @{code true} if enabled, {@code false} otherwise
+     * @return {@code true} if enabled, {@code false} otherwise
      */
     public boolean isAutoOpen() {
         return !getElement().getProperty(PROP_AUTO_OPEN_DISABLED, false);

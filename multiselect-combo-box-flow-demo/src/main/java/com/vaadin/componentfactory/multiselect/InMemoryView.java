@@ -2,9 +2,8 @@ package com.vaadin.componentfactory.multiselect;
 
 import com.vaadin.componentfactory.multiselect.bean.Person;
 import com.vaadin.componentfactory.multiselect.service.PersonService;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.router.Route;
 
 import java.util.HashSet;
@@ -13,37 +12,29 @@ import java.util.List;
 /**
  * Basic example with setItems
  */
-@Route(value = "", layout = MainLayout.class)
-public class SimpleView extends VerticalLayout {
+@Route(value = "in-memory", layout = MainLayout.class)
+public class InMemoryView extends VerticalLayout {
 
+    private Span itemsSelected = new Span();
 
-    public SimpleView() {
-        MultiSelectCombobox<Person> combobox = new MultiSelectCombobox<>();
+    public InMemoryView() {
+        MultiSelectCombobox<Person> combobox = new MultiSelectCombobox<>(1000);
         combobox.setLabel("Persons");
         List<Person> personList = getItems();
         combobox.setItems(personList);
         add(combobox);
-        MultiSelectCombobox<Person> combobox2 = new MultiSelectCombobox<>();
-        combobox2.setLabel("Persons Id");
-        combobox2.setItemLabelGenerator(person -> person.getId() + "");
-        combobox2.setItems(personList);
-        add(combobox2);
+
         HashSet<Person> value = new HashSet<>();
         value.add(personList.get(0));
         value.add(personList.get(5));
-        combobox2.setValue(value);
+        combobox.setValue(value);
         combobox.addValueChangeListener(e -> {
-            if (e.getOldValue() != null) {
-                System.out.println("Old value " + e.getOldValue().toString());
+            if (e.getValue() != null) {
+                itemsSelected.setText("Items selected:" + e.getValue().toString());
             } else {
-                System.out.println("Old value NULL ");
+                itemsSelected.setText("No item selected");
             }
 
-            if (e.getValue() != null) {
-                System.out.println("New value " + e.getValue().toString());
-            } else {
-                System.out.println("New value NULL ");
-            }
         });
     }
 
