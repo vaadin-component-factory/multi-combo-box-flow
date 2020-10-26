@@ -43,7 +43,7 @@ import java.util.Set;
 @Tag("vcf-multiselect-combo-box")
 @JsModule("@vaadin-component-factory/vcf-multiselect-combo-box/src/vcf-multiselect-combo-box.js")
 @NpmPackage(value = "@vaadin-component-factory/vcf-multiselect-combo-box", version = "0.1.4")
-public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelectComboBox<R, T>, T>
+public abstract class GeneratedMultiComboBox<R extends GeneratedMultiComboBox<R, T>, T>
         extends AbstractSinglePropertyField<R, Set<T>>
         implements HasStyle, Focusable<R> {
 
@@ -944,7 +944,7 @@ public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelec
     }
 
     @DomEvent("custom-value-set")
-    public static class CustomValueSetEvent<R extends GeneratedMultiSelectComboBox<R, ?>>
+    public static class CustomValueSetEvent<R extends GeneratedMultiComboBox<R, ?>>
             extends ComponentEvent<R> {
         private final String detail;
 
@@ -974,7 +974,7 @@ public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelec
                 (ComponentEventListener) listener);
     }
 
-    public static class SelectedItemChangeEvent<R extends GeneratedMultiSelectComboBox<R, ?>>
+    public static class SelectedItemChangeEvent<R extends GeneratedMultiComboBox<R, ?>>
             extends ComponentEvent<R> {
         private final JsonObject selectedItem;
 
@@ -1004,7 +1004,7 @@ public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelec
                                 event.isUserOriginated())));
     }
 
-    public static class OpenedChangeEvent<R extends GeneratedMultiSelectComboBox<R, ?>>
+    public static class OpenedChangeEvent<R extends GeneratedMultiComboBox<R, ?>>
             extends ComponentEvent<R> {
         private final boolean opened;
 
@@ -1035,7 +1035,7 @@ public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelec
                                         event.isUserOriginated())));
     }
 
-    public static class FilterChangeEvent<R extends GeneratedMultiSelectComboBox<R, ?>>
+    public static class FilterChangeEvent<R extends GeneratedMultiComboBox<R, ?>>
             extends ComponentEvent<R> {
         private final String filter;
 
@@ -1066,7 +1066,7 @@ public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelec
                                         event.isUserOriginated())));
     }
 
-    public static class InvalidChangeEvent<R extends GeneratedMultiSelectComboBox<R, ?>>
+    public static class InvalidChangeEvent<R extends GeneratedMultiComboBox<R, ?>>
             extends ComponentEvent<R> {
         private final boolean invalid;
 
@@ -1165,10 +1165,10 @@ public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelec
      * @param <P>
      *            the property type
      */
-    public <P> GeneratedMultiSelectComboBox(Set<T> initialValue, Set<T> defaultValue,
-                                            Class<P> elementPropertyType,
-                                            SerializableFunction<P, Set<T>> presentationToModel,
-                                            SerializableFunction<Set<T>, P> modelToPresentation) {
+    public <P> GeneratedMultiComboBox(Set<T> initialValue, Set<T> defaultValue,
+                                      Class<P> elementPropertyType,
+                                      SerializableFunction<P, Set<T>> presentationToModel,
+                                      SerializableFunction<Set<T>, P> modelToPresentation) {
         super("selectedItems", defaultValue, elementPropertyType, presentationToModel,
                 modelToPresentation);
         if (initialValue != null) {
@@ -1188,8 +1188,8 @@ public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelec
      * @param acceptNullValues
      *            whether <code>null</code> is accepted as a model value
      */
-    public GeneratedMultiSelectComboBox(Set<T> initialValue, Set<T> defaultValue,
-                                        boolean acceptNullValues) {
+    public GeneratedMultiComboBox(Set<T> initialValue, Set<T> defaultValue,
+                                  boolean acceptNullValues) {
         super("selectedItems", defaultValue, acceptNullValues);
         if (initialValue != null) {
             setModelValue(initialValue, false);
@@ -1216,10 +1216,10 @@ public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelec
      * @param <P>
      *            the property type
      */
-    public <P> GeneratedMultiSelectComboBox(Set<T> initialValue, Set<T> defaultValue,
-                                            Class<P> elementPropertyType,
-                                            SerializableBiFunction<R, P, Set<T>> presentationToModel,
-                                            SerializableBiFunction<R, Set<T>, P> modelToPresentation) {
+    public <P> GeneratedMultiComboBox(Set<T> initialValue, Set<T> defaultValue,
+                                      Class<P> elementPropertyType,
+                                      SerializableBiFunction<R, P, Set<T>> presentationToModel,
+                                      SerializableBiFunction<R, Set<T>, P> modelToPresentation) {
         super("selectedItems", defaultValue, elementPropertyType, presentationToModel, modelToPresentation);
         if (initialValue != null) {
             setModelValue(initialValue, false);
@@ -1230,7 +1230,7 @@ public abstract class GeneratedMultiSelectComboBox<R extends GeneratedMultiSelec
     /**
      * Default constructor.
      */
-    public GeneratedMultiSelectComboBox() {
+    public GeneratedMultiComboBox() {
         this(null, null, null, (SerializableFunction) null,
                 (SerializableFunction) null);
     }

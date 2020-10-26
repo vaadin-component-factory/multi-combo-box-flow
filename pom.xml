@@ -2,15 +2,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.vaadin.componentfactory</groupId>
-    <artifactId>multiselect-combo-box-flow-root</artifactId>
-    <version>0.0.2</version>
+    <artifactId>multi-combo-box-flow-root</artifactId>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
     <modules>
-        <module>multiselect-combo-box-flow</module>
-        <module>multiselect-combo-box-flow-demo</module>
+        <module>multi-combo-box-flow</module>
+        <module>multi-combo-box-flow-demo</module>
     </modules>
-    <name>multiselect-combo-box-flow</name>
-    <description>multiselect-combo-box-flow</description>
+    <name>multi-combo-box-flow</name>
+    <description>multi-combo-box-flow</description>
 
     <properties>
         <vaadin.version>14.4.1</vaadin.version>
@@ -18,7 +18,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <multiselect-combo-box-flow.version>0.0.2</multiselect-combo-box-flow.version>
+        <multi-combo-box-flow.version>0.1.0</multi-combo-box-flow.version>
     </properties>
     <inceptionYear>2020</inceptionYear>
     <organization>
@@ -36,8 +36,8 @@
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>multiselect-combo-box-flow</artifactId>
-                <version>${multiselect-combo-box-flow.version}</version>
+                <artifactId>multi-combo-box-flow</artifactId>
+                <version>${multi-combo-box-flow.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.vaadin</groupId>

@@ -11,7 +11,11 @@ public class MainLayout extends AppLayout {
         final DrawerToggle drawerToggle = new DrawerToggle();
         final RouterLink simple = new RouterLink("Simple view", SimpleView.class);
         final RouterLink inMemoryView = new RouterLink("InMemory view", InMemoryView.class);
-        final VerticalLayout menuLayout = new VerticalLayout(simple,inMemoryView);
+        final RouterLink bindingView = new RouterLink("Binding view", BindingView.class);
+        final RouterLink labelGeneratorView = new RouterLink("LabelGenerator view", LabelGeneratorView.class);
+        final RouterLink lazyDataProviderView = new RouterLink("LazyDataProvider view", LazyDataProviderView.class);
+        final VerticalLayout menuLayout = new VerticalLayout(simple, inMemoryView, bindingView,
+            labelGeneratorView, lazyDataProviderView);
         addToDrawer(menuLayout);
         addToNavbar(drawerToggle);
     }

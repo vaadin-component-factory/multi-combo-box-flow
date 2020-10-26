@@ -8,7 +8,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.Route;
 
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -20,7 +19,7 @@ public class RendererView extends Div {
 
 
     public RendererView() {
-        MultiSelectCombobox<Person> combobox = new MultiSelectCombobox<>();
+        MultiComboBox<Person> combobox = new MultiComboBox<>();
         combobox.setLabel("Persons");
         List<Person> personList = getItems();
         combobox.setItems(personList);

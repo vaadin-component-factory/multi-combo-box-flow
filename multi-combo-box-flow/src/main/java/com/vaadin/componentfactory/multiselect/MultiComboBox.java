@@ -19,15 +19,11 @@ package com.vaadin.componentfactory.multiselect;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClientCallable;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.HasHelper;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasValidation;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.ItemLabelGenerator;
-import com.vaadin.flow.component.JsonSerializable;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JavaScript;
@@ -53,7 +49,6 @@ import com.vaadin.flow.internal.JsonUtils;
 import com.vaadin.flow.shared.Registration;
 import elemental.json.Json;
 import elemental.json.JsonArray;
-import elemental.json.JsonNull;
 import elemental.json.JsonObject;
 import elemental.json.JsonValue;
 
@@ -74,7 +69,7 @@ import java.util.stream.Stream;
 @CssImport(value = "./src/vcf-vaadin-combo-box-item.css", themeFor = "vaadin-combo-box-item")
 @JsModule.Container({@JsModule("./flow-component-renderer.js"), @JsModule("./comboBoxConnector-es6.js")})
 @JavaScript("frontend://comboBoxConnector.js")
-public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSelectCombobox<T>, T>
+public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T>
     implements HasSize, HasValidation,
     HasFilterableDataProvider<T, String>, HasHelper {
 
@@ -145,7 +140,7 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
         public void set(int start, List<JsonValue> items) {
             enqueue("$connector.set", start,
                 items.stream().collect(JsonUtils.asArray()),
-                MultiSelectCombobox.this.lastFilter);
+                MultiComboBox.this.lastFilter);
         }
 
         @Override
@@ -155,7 +150,7 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
 
         @Override
         public void commit(int updateId) {
-            enqueue("$connector.confirm", updateId, MultiSelectCombobox.this.lastFilter);
+            enqueue("$connector.confirm", updateId, MultiComboBox.this.lastFilter);
             queue.forEach(Runnable::run);
             queue.clear();
         }
@@ -181,7 +176,7 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
     };
 
     /**
-     * Predicate to check {@link MultiSelectCombobox} items against user typed strings.
+     * Predicate to check {@link MultiComboBox} items against user typed strings.
      */
     @FunctionalInterface
     public interface ItemFilter<T> extends SerializableBiPredicate<T, String> {
@@ -229,9 +224,9 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
      * @param pageSize
      *            the amount of items to request at a time for lazy loading
      */
-    public MultiSelectCombobox(int pageSize) {
-        super(null, null, JsonValue.class, MultiSelectCombobox::presentationToModel,
-            MultiSelectCombobox::modelToPresentation);
+    public MultiComboBox(int pageSize) {
+        super(null, null, JsonValue.class, MultiComboBox::presentationToModel,
+            MultiComboBox::modelToPresentation);
         dataGenerator.addDataGenerator((item, jsonObject) -> jsonObject
             .put("label", generateLabel(item)));
 
@@ -265,7 +260,7 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
     /**
      * Default constructor. Creates an empty combo box.
      */
-    public MultiSelectCombobox() {
+    public MultiComboBox() {
         this(50);
     }
 
@@ -275,7 +270,7 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
      * @param label
      *            the label describing the combo box
      */
-    public MultiSelectCombobox(String label) {
+    public MultiComboBox(String label) {
         this();
         setLabel(label);
     }
@@ -290,7 +285,7 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
      *            the items to be shown in the list of the combo box
      * @see #setItems(Collection)
      */
-    public MultiSelectCombobox(String label, Collection<T> items) {
+    public MultiComboBox(String label, Collection<T> items) {
         this();
         setLabel(label);
         setItems(items);
@@ -307,13 +302,13 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
      * @see #setItems(Object...)
      */
     @SafeVarargs
-    public MultiSelectCombobox(String label, T... items) {
+    public MultiComboBox(String label, T... items) {
         this();
         setLabel(label);
         setItems(items);
     }
 
-    private static <T> Set<T> presentationToModel(MultiSelectCombobox<T> comboBox,
+    private static <T> Set<T> presentationToModel(MultiComboBox<T> comboBox,
                                                   JsonValue presentation) {
         if (!(presentation instanceof JsonArray) || comboBox.dataCommunicator == null) {
             return comboBox.getEmptyValue();
@@ -342,13 +337,13 @@ public class MultiSelectCombobox<T> extends GeneratedMultiSelectComboBox<MultiSe
         return result;
     }
 
-    private static <T> JsonArray modelToPresentation(MultiSelectCombobox<T> comboBox,
+    private static <T> JsonArray modelToPresentation(MultiComboBox<T> comboBox,
                                                      Set<T> models) {
         return modelToPresentation(comboBox, models, String::valueOf);
     }
 
-    private static <T> JsonArray modelToPresentation(MultiSelectCombobox<T> comboBox,
-                                                  Collection<T> models, ItemLabelGenerator<T> generateLabel) {
+    private static <T> JsonArray modelToPresentation(MultiComboBox<T> comboBox,
+                                                     Collection<T> models, ItemLabelGenerator<T> generateLabel) {
         if (models == null) {
             return Json.createArray();
         }
