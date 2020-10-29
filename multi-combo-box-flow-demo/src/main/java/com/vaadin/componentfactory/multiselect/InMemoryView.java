@@ -4,6 +4,7 @@ import com.vaadin.componentfactory.multiselect.bean.Person;
 import com.vaadin.componentfactory.multiselect.service.PersonService;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 
 import java.util.HashSet;
@@ -36,6 +37,8 @@ public class InMemoryView extends VerticalLayout {
             }
 
         });
+        combobox.setComponentModeValueChangeMode(MultiComboBox.MultiComboboxMode.LAZY_AND_CLIENT_SIDE_FILTERING);
+        add(itemsSelected);
     }
 
     private List<Person> getItems() {

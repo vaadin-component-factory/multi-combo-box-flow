@@ -30,7 +30,7 @@ It's optimized to be used with a keyboard:
 
 "Select All" selects all the items.
 
-"Cancel" closes and resets the selection (replace the current value with the value when the user opened the combobox)
+"Clear" removes the selection
 
 It's recommended to use the page size to activate the filtering on client side.
 

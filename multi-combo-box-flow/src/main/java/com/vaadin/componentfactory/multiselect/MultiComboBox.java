@@ -63,9 +63,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * @author jcgueriaud
- */
 @CssImport(value = "./src/vcf-vaadin-combo-box-item.css", themeFor = "vaadin-combo-box-item")
 @JsModule.Container({@JsModule("./flow-component-renderer.js"), @JsModule("./comboBoxConnector-es6.js")})
 @JavaScript("frontend://comboBoxConnector.js")
@@ -80,7 +77,7 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
     private Registration dataProviderListener = null;
     private boolean shouldForceServerSideFiltering = false;
 
-    private Set<T> previousSelectedItems = new HashSet<>();
+    private MultiComboboxMode currentMode = MultiComboboxMode.EAGER;
 
     /**
      * A callback method for fetching items. The callback is provided with a
@@ -106,28 +103,6 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
          */
         public Stream<T> fetchItems(String filter, int offset, int limit);
     }
-/*
-    private class CustomValueRegistration implements Registration {
-
-        private Registration delegate;
-
-        private CustomValueRegistration(Registration delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public void remove() {
-            if (delegate != null) {
-                delegate.remove();
-                customValueListenersCount--;
-
-                if (customValueListenersCount == 0) {
-                    setAllowCustomValue(false);
-                }
-                delegate = null;
-            }
-        }
-    }*/
 
     private final class UpdateQueue implements ArrayUpdater.Update {
         private transient List<Runnable> queue = new ArrayList<>();
@@ -244,12 +219,7 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
         });
         // sort on close
         addOpenedChangeListener(event -> {
-            if (event.isOpened()) {
-                // clone the previous selectedItems on open
-                previousSelectedItems = new HashSet<>(getValue());
-            } else {
-                // clear the previous selectedItems on close
-                previousSelectedItems = new HashSet<>();
+            if (!event.isOpened()) {
                 getDataProvider().refreshAll();
             }
         });
@@ -402,7 +372,6 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
 
             }
         }
-        //setSelectedItems(modelToPresentation(this, values, this::generateLabel));
         getElement().setPropertyJson(PROP_VALUE, modelToPresentation(this, values, this::generateLabel));
         // refresh the label if closed
         if (!isOpened()) {
@@ -425,7 +394,9 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
      * is set here. Filtering is done on the original values and can be affected
      * by {@link #setItemLabelGenerator(ItemLabelGenerator)}.
      */
-    @Deprecated // TODO JCG Does not work, should be remove
+    // TODO could be done if we change the checkboxes in the component to the item selected
+    // But the update of the rendering of these items  (unchecked/checked is not working in iron list)
+   /* @Deprecated
     public void setRenderer(Renderer<T> renderer) {
         Objects.requireNonNull(renderer, "The renderer must not be null");
         this.renderer = renderer;
@@ -435,7 +406,7 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
             getElement().appendChild(template);
         }
         scheduleRender();
-    }
+    }*/
 
     /**
      * {@inheritDoc}
@@ -757,8 +728,6 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
      * in the combo box for each item. By default,
      * {@link String#valueOf(Object)} is used.
      * <p>
-     * When the {@link #setRenderer(Renderer)} is used, the ItemLabelGenerator
-     * is only used to show the selected item label.
      *
      * @param itemLabelGenerator
      *            the item label provider to use, not null
@@ -1127,9 +1096,37 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
         setValue(getDataProvider().fetch(new Query<>()).collect(Collectors.toSet()));
     }
 
-    @ClientCallable
-    private void cancelChanges() {
-        setValue(previousSelectedItems);
-        close();
+    public MultiComboboxMode getValueChangeMode() {
+        return this.currentMode;
+    }
+
+    /**
+     * Sets new value change mode for the component.
+     * By default the component is in EAGER mode
+     *  = propagate the changes when an item is selected
+     * In LAZY_AND_CLIENT_SIDE_FILTERING mode the value is propagated when the item is closed
+     * It requires a filtering on the client side
+     *
+     *
+     * @param multiComboboxMode
+     *            new value change mode, or {@code null} to disable the value
+     *            synchronization
+     */
+    public void setComponentModeValueChangeMode(MultiComboboxMode multiComboboxMode) {
+        this.currentMode = multiComboboxMode;
+        if (MultiComboboxMode.EAGER == multiComboboxMode) {
+            this.setSynchronizedEvent("selected-items-changed");
+        } else if (MultiComboboxMode.LAZY_AND_CLIENT_SIDE_FILTERING == multiComboboxMode) {
+            this.setSynchronizedEvent("on-close");
+            this.setPageSize(Integer.MAX_VALUE);
+        } else {
+            throw new UnsupportedOperationException("valueChangeMode should be EAGER or LAZY");
+        }
+    }
+
+
+    public enum MultiComboboxMode {
+        EAGER,
+        LAZY_AND_CLIENT_SIDE_FILTERING
     }
 }
