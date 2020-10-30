@@ -30,7 +30,7 @@ It's optimized to be used with a keyboard:
 
 "Select All" selects all the items.
 
-"Cancel" closes and resets the selection (replace the current value with the value when the user opened the combobox)
+"Clear" removes the selection
 
 It's recommended to use the page size to activate the filtering on client side.
 
@@ -171,4 +171,4 @@ You can check the demo here: https://incubator.app.fi/multi-combo-box-flow-demo/
 
 ## Missing features or bugs
 
-You can report any issue or missing feature on github: https://github.com/vaadin-component-factory/multiselect-combo-box
+You can report any issue or missing feature on github: https://github.com/vaadin-component-factory/multi-combo-box-flow

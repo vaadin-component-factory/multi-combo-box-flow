@@ -25,6 +25,7 @@ public class LazyDataProviderView extends VerticalLayout {
             }
 
         });
+        add(itemsSelected);
     }
 
 }
