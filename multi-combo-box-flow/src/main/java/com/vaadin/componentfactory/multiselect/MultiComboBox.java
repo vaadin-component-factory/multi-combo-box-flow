@@ -63,7 +63,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@CssImport(value = "./src/vcf-vaadin-combo-box-item.css", themeFor = "vaadin-combo-box-item")
 @JsModule.Container({@JsModule("./flow-component-renderer.js"), @JsModule("./comboBoxConnector-es6.js")})
 @JavaScript("frontend://comboBoxConnector.js")
 public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T>
@@ -394,9 +393,6 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
      * is set here. Filtering is done on the original values and can be affected
      * by {@link #setItemLabelGenerator(ItemLabelGenerator)}.
      */
-    // TODO could be done if we change the checkboxes in the component to the item selected
-    // But the update of the rendering of these items  (unchecked/checked is not working in iron list)
-   /* @Deprecated
     public void setRenderer(Renderer<T> renderer) {
         Objects.requireNonNull(renderer, "The renderer must not be null");
         this.renderer = renderer;
@@ -406,7 +402,7 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
             getElement().appendChild(template);
         }
         scheduleRender();
-    }*/
+    }
 
     /**
      * {@inheritDoc}

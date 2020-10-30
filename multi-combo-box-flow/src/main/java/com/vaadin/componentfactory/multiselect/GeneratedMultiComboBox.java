@@ -42,7 +42,7 @@ import java.util.Set;
 
 @Tag("vcf-multiselect-combo-box")
 @JsModule("@vaadin-component-factory/vcf-multiselect-combo-box/src/vcf-multiselect-combo-box.js")
-@NpmPackage(value = "@vaadin-component-factory/vcf-multiselect-combo-box", version = "0.1.6")
+@NpmPackage(value = "@vaadin-component-factory/vcf-multiselect-combo-box", version = "0.2.0")
 public abstract class GeneratedMultiComboBox<R extends GeneratedMultiComboBox<R, T>, T>
         extends AbstractSinglePropertyField<R, Set<T>>
         implements HasStyle, Focusable<R> {

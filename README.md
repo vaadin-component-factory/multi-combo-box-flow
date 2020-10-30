@@ -171,4 +171,4 @@ You can check the demo here: https://incubator.app.fi/multi-combo-box-flow-demo/
 
 ## Missing features or bugs
 
-You can report any issue or missing feature on github: https://github.com/vaadin-component-factory/multiselect-combo-box
+You can report any issue or missing feature on github: https://github.com/vaadin-component-factory/multi-combo-box-flow
