@@ -6,14 +6,17 @@ package com.vaadin.componentfactory.multiselect;
  * %%
  * Copyright (C) 2020 Vaadin Ltd
  * %%
- * This program is available under Commercial Vaadin Add-On License 3.0
- * (CVALv3).
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * See the file license.html distributed with this software for more
- * information about licensing.
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
- * You should have received a copy of the CVALv3 along with this program.
- * If not, see <http://vaadin.com/license/cval-3>.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * #L%
  */
 
@@ -45,6 +48,7 @@ import com.vaadin.flow.function.SerializableBiPredicate;
 import com.vaadin.flow.function.SerializableComparator;
 import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.function.SerializableFunction;
+import com.vaadin.flow.internal.JsonSerializer;
 import com.vaadin.flow.internal.JsonUtils;
 import com.vaadin.flow.shared.Registration;
 import elemental.json.Json;
@@ -77,6 +81,7 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
     private boolean shouldForceServerSideFiltering = false;
 
     private MultiComboboxMode currentMode = MultiComboboxMode.EAGER;
+    private MultiComboBoxI18n i18n;
 
     /**
      * A callback method for fetching items. The callback is provided with a
@@ -1124,5 +1129,68 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
     public enum MultiComboboxMode {
         EAGER,
         LAZY_AND_CLIENT_SIDE_FILTERING
+    }
+
+    /**
+     * Gets the internationalization object previously set for this component.
+     * <p>
+     * Note: updating the object content that is gotten from this method will
+     * not update the lang on the component if not set back using
+     * {@link MultiComboBox#setI18n(MultiComboBoxI18n)}
+     *
+     * @return the i18n object. It will be <code>null</code>, If the i18n
+     *         properties weren't set.
+     */
+    public MultiComboBoxI18n getI18n() {
+        return i18n;
+    }
+
+    /**
+     * Sets the internationalization properties for this component.
+     *
+     * @param i18n
+     *            the internationalized properties, not <code>null</code>
+     */
+    public void setI18n(MultiComboBoxI18n i18n) {
+        Objects.requireNonNull(i18n,
+            "The I18N properties object should not be null");
+        this.i18n = i18n;
+        setI18nWithJS();
+    }
+
+    private void setI18nWithJS() {
+        runBeforeClientResponse(ui -> {
+            JsonObject i18nObject = (JsonObject) JsonSerializer.toJson(i18n);
+            for (String key : i18nObject.keys()) {
+                getElement().executeJs("this.set('i18n." + key + "', $0)",
+                    i18nObject.get(key));
+            }
+        });
+    }
+
+    /**
+     * The internationalization properties for {@link MultiComboBox}.
+     */
+    public static class MultiComboBoxI18n implements Serializable {
+        private String select;
+        private String clear;
+
+        public String getSelect() {
+            return select;
+        }
+
+        public MultiComboBoxI18n setSelect(String select) {
+            this.select = select;
+            return this;
+        }
+
+        public String getClear() {
+            return clear;
+        }
+
+        public MultiComboBoxI18n setClear(String clear) {
+            this.clear = clear;
+            return this;
+        }
     }
 }
