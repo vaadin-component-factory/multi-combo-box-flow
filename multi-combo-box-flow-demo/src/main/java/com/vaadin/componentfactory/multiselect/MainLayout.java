@@ -16,8 +16,9 @@ public class MainLayout extends AppLayout {
         final RouterLink rendererView = new RouterLink("Renderer view", RendererView.class);
         final RouterLink labelGeneratorView = new RouterLink("LabelGenerator view", LabelGeneratorView.class);
         final RouterLink lazyDataProviderView = new RouterLink("LazyDataProvider view", LazyDataProviderView.class);
+        final RouterLink longListView = new RouterLink("Long list view", LongListView.class);
         final VerticalLayout menuLayout = new VerticalLayout(simple, i18n, inMemoryView, bindingView, rendererView,
-            labelGeneratorView, lazyDataProviderView);
+            labelGeneratorView, lazyDataProviderView, longListView);
         addToDrawer(menuLayout);
         addToNavbar(drawerToggle);
     }
