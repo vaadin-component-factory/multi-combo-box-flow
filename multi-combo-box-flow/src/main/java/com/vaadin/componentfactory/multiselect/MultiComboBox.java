@@ -67,8 +67,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@JsModule.Container({@JsModule("./flow-component-renderer.js"), @JsModule("./comboBoxConnector-es6.js")})
-@JavaScript("frontend://comboBoxConnector.js")
+@JsModule("./flow-component-renderer.js")
+@JsModule("./comboBoxConnector.js")
 public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T>
     implements HasSize, HasValidation,
     HasFilterableDataProvider<T, String>, HasHelper {
