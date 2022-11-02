@@ -591,6 +591,7 @@ public class MultiComboBox<T> extends GeneratedMultiComboBox<MultiComboBox<T>, T
         if (dataProvider != null && dataProviderListener == null) {
             setupDataProviderListener(dataProvider);
         }
+        refreshValue();
     }
 
     @Override
