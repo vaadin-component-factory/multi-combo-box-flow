@@ -44,15 +44,15 @@ jobs:
       uses: appleboy/scp-action@v0.1.1
       with:
         # scp remote host
-        host: ${{ secrets.APP_FI_HOST }}
+        host: ${{ secrets.APP_FI_HOST_JAVA11 }}
         # scp remote port
-        port: ${{ secrets.APP_FI_PORT }}
+        port: ${{ secrets.APP_FI_PORT_JAVA11 }}
         # scp username
-        username: ${{ secrets.APP_FI_USER }}
+        username: ${{ secrets.APP_FI_USER_JAVA11 }}
         # scp password
-        password: ${{ secrets.APP_FI_PASSWORD }}
+        password: ${{ secrets.APP_FI_PASSWORD_JAVA11 }}
         # target path on the server
         target: webapps/
         # scp file list
         source: ${{ secrets.DEMO_NAME }}.war
-        fingerprint: ${{ secrets.APP_FI_SHA256 }}
+        fingerprint: ${{ secrets.APP_FI_SHA256_JAVA11 }}
